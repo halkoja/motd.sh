@@ -19,19 +19,23 @@ showmotd () {
 	local R3="$N $R"$PAD"Uptime:     ${W}$(echo $UP | cut -d ' ' -f 2-)"
 	local Rb="$N ${R}"$PAD"Last Login: ${W}"
 
-	# Parse last login & resolve ip.
-	local Rt=`last -2 | awk -v PAD="$PAD" 'FNR == 2 { \
-	"dig +short -x " $3 | getline HOSTADDR; L=$3 " (" HOSTADDR ")" ;\
-	R2="|" PAD "             " $1 " @ " $4 " " $5  " " $6 " " $7 "-" $9; printf L R2 }'`
+	# Parse last login.
+	local Rh=`last -2wda | awk 'FNR == 2 { printf $NF }'`
+	local Rt=`last -2wi | awk -v PAD="$PAD" -v H="$Rh" 'FNR == 2 { \
+	L=$3; R2="|" PAD "             " $1 " @ " $4 " " $5  " " $6 " " $7 "-" $9; printf L R2 }'`
 
 	# Parse awk output using | as separator.
 	IFS='|'; read -a RS <<< "${Rt}"
 
-	if [ ${RS[0]} = ":0 ()" ]; then
+	if [ ${RS[0]} = "0.0.0.0" ]; then
 		local R4="${Rb}local session"
 	else
 		local R4="${Rb}${RS[0]}"
+		if [ ${RS[0]} != ${Rh} ]; then
+			local R4=${R4}" ("${Rh}")"
+		fi
 	fi
+
 	local R5="$N $W"${RS[1]}
 
 	# Compensate for length of last row (color codes add length to other rows).
