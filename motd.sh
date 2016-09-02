@@ -3,21 +3,30 @@
 # Stylized greeter. Displays a colorized info box.
 
 showmotd () {
-	local HOSTNAME=`uname -n`
-	local KERNEL=`uname -r`
-	local UP=`uptime -p`
 	# The different colors as variables
-	local W="\033[01;37;40m"
-	local R="\033[01;31;40m"
-	local N="\033[m"
+
+	# Background. Default: blue (40m)
+	local BG="\e[40m"
+	# Item descriptions (text on the left)
+	# Default: bold red (01;31m)
+	local R="\e[01;31m"
+	# Returned status (text on the right)
+	# Default: bold white (01;37m)
+	local W="\e[01;37m"
+	# Reset style (don't modify)
+	local N="\e[m"
 
 	# Padding string.
 	local PAD="   "
 
-	local R1="$N $R"$PAD"Host:       ${W}$HOSTNAME"
-	local R2="$N $R"$PAD"Kernel:     ${W}$KERNEL"
-	local R3="$N $R"$PAD"Uptime:     ${W}$(echo $UP | cut -d ' ' -f 2-)"
-	local Rb="$N ${R}"$PAD"Last Login: ${W}"
+	local HOSTNAME=`uname -n`
+	local KERNEL=`uname -r`
+	local UP=`uptime -p`
+
+	local R1="$N $BG$R"$PAD"Host:       ${W}$HOSTNAME"
+	local R2="$N $BG$R"$PAD"Kernel:     ${W}$KERNEL"
+	local R3="$N $BG$R"$PAD"Uptime:     ${W}$(echo $UP | cut -d ' ' -f 2-)"
+	local Rb="$N $BG${R}"$PAD"Last Login: ${W}"
 
 	# Parse last login.
 	local Rh=`last -2wda | awk 'FNR == 2 { printf $NF }'`
@@ -32,11 +41,11 @@ showmotd () {
 	else
 		local R4="${Rb}${RS[0]}"
 		if [ ${RS[0]} != ${Rh} ]; then
-			local R4=${R4}" ("${Rh}")"
+			local R4=$BG${R4}" ("${Rh}")"
 		fi
 	fi
 
-	local R5="$N $W"${RS[1]}
+	local R5="$N $BG$W"${RS[1]}
 
 	# Compensate for length of last row (color codes add length to other rows).
 	local M5=`expr ${#R5} + ${#R}`
