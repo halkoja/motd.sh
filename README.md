@@ -3,7 +3,7 @@ Simple ssh greeter
 
 Displays a customizable infobox.
 
-![My image](motd.png)
+![output](motd.png)
 
 #Installation
 Copy the file motd.sh (with a +x flag) to /etc/profile.d
