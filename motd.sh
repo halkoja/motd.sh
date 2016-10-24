@@ -26,7 +26,7 @@ showmotd () {
 	local R1="$N $BG$R"$PAD"Host:       ${W}$HOSTNAME"
 	local R2="$N $BG$R"$PAD"Kernel:     ${W}$KERNEL"
 	local R3="$N $BG$R"$PAD"Uptime:     ${W}$(echo $UP | cut -d ' ' -f 2-)"
-	local Rb="$N $BG${R}"$PAD"Last Login: ${W}"
+	local Rb="$N $BG$R"$PAD"Last Login: ${W}"
 
 	# Parse last login.
 	local Rh=`last -2wda | awk 'FNR == 2 { printf $NF }'`
@@ -41,7 +41,7 @@ showmotd () {
 	else
 		local R4="${Rb}${RS[0]}"
 		if [ ${RS[0]} != ${Rh} ]; then
-			local R4=$BG${R4}" ("${Rh}")"
+			local R4=${R4}" ("${Rh}")"
 		fi
 	fi
 
